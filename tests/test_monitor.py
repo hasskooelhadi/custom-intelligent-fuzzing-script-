@@ -42,6 +42,34 @@ def test_normalize_js_url_filters_cookies():
     )
 
 
+def test_normalize_url_ignores_invalid_ipv6():
+    assert (
+        normalize_url("http://[::ffff:300.1.1.1]/", "https://example.com")
+        is None
+    )
+
+
+def test_normalize_js_url_ignores_invalid_ipv6():
+    assert (
+        normalize_js_url("http://[::ffff:300.1.1.1]/", "https://example.com")
+        is None
+    )
+
+
+def test_normalize_url_handles_invalid_base_join():
+    assert (
+        normalize_url("/path", "http://[::ffff:300.1.1.1]/")
+        is None
+    )
+
+
+def test_normalize_js_url_handles_invalid_base_join():
+    assert (
+        normalize_js_url("'/api'", "http://[::ffff:300.1.1.1]/script.js")
+        is None
+    )
+
+
 class DummyClient:
     def __init__(self):
         self.payloads = []
