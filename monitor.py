@@ -133,8 +133,14 @@ def normalize_url(raw: str, base: str) -> Optional[str]:
         return None
     if raw.startswith("//"):
         raw = "https:" + raw
-    url = urljoin(base, raw)
-    parsed = urlparse(url)
+    try:
+        url = urljoin(base, raw)
+    except ValueError:
+        return None
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return None
     if parsed.scheme not in {"http", "https"}:
         return None
     # remove tracking query params
@@ -147,8 +153,14 @@ def normalize_js_url(raw: str, base: str) -> Optional[str]:
     if candidate.startswith("//"):
         candidate = "https:" + candidate
     if candidate.startswith("/"):
-        candidate = urljoin(base, candidate)
-    parsed = urlparse(candidate)
+        try:
+            candidate = urljoin(base, candidate)
+        except ValueError:
+            return None
+    try:
+        parsed = urlparse(candidate)
+    except ValueError:
+        return None
     if parsed.scheme not in {"http", "https"}:
         return None
     if COOKIE_LIKE_RE.search(candidate):
